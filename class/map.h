@@ -218,13 +218,43 @@ void map::setOutBitmap(BITMAP *bmp) { out=bmp; }
 
 void map::drawMap()
  {
- 	for(int x=0;x<=num_col;x++)
- 	 for(int y=0;y<=num_row;y++)
- 	  {
+	 int my_x,my_y;
+	 /*
+	 printf("tilemax_x: %i, tilemax_y: %i\n", tilemax_x, tilemax_y);
+	 printf("num_col: %i, num_row: %i\n", num_col, num_row);
+	 */
+ 	for(int x=0; x<=num_col; x++) {
+ 	 for(int y=0; y<=num_row; y++) {
+		 
  	   //blit(getTile(y+tilepos_y,x),out,0,0,x*tdim_x,(max_ty-1-y)*tdim_y+scroll_dy,scr_x,scr_y);
  	   //draw_sprite(out,tile[data[x+tilepos_x][num_row-1-y]],x*tile_w-scroll_dx,(num_row-1-y)*tile_h);
- 	   
- 	   draw_sprite(out,tile[data[x+tilepos_x][y+tilepos_y]],x*tile_w-scroll_dx,y*tile_h-scroll_dy);
+		 /*
+		  printf("x: %i, y: %i, tilepos_x: %i, tilepos_y: %i\n", x, y, tilepos_x, tilepos_y);
+		  printf("sanity x: %i, y: %i\n", (x + tilepos_x), (y + tilepos_y));
+		  */
+		 /*
+		  int pos_x = (int)tilepos_x;
+		  int pos_y = (int)tilepos_y;
+		  printf("wtf tilepos check x : %i, y : %i\n", pos_x, pos_y);
+		  */
+		  my_x = (int)((int)x + (int)tilepos_x);
+		  my_y = (int)((int)y + (int)tilepos_y);
+		  //printf("pre limit check new x : %i, new y : %i\n", my_x, my_y);
+		  if (my_x >= tilemax_x) {
+			  my_x = 0;
+		  }
+		  if (my_y >= tilemax_y) {
+			  my_y = 0;
+		  }
+		//printf("post limit check new x : %i, new y : %i\n", my_x, my_y);
+ 	   int data_val = data[my_x][my_y];
+	   if (data_val) {
+		   //printf("data val = %i\n", data_val);
+			draw_sprite(out,tile[data_val],x*tile_w-scroll_dx,y*tile_h-scroll_dy);
+	   } /*else {
+		   printf("data null val = %i\n", data_val);
+	    }*/
+	  }
  	   
  	   //textprintf_ex(out,font,0+x*25,0+y*25,makecol32(255,0,0),-1,"%d",data[x][y]);
  	   //textprintf_ex(out,font,0+x*25,0+y*25,makecol32(255,0,0),-1,"%d",data[x+tilepos_x][num_row-1-y]);
@@ -232,7 +262,7 @@ void map::drawMap()
  	//scrollMap();
  }
 
-void map::scrollMap()
+void map::scrollMap() 
  {
   // Horizontal scroll
   if(!hscroll_on) {
@@ -240,18 +270,22 @@ void map::scrollMap()
   }
   else {
 	  scroll_x=*ctrl_x/speed_x;
-	  scroll_dx=scroll_x%tile_w; 
-	  tilepos_x=scroll_x/tile_w;
   }
+  scroll_dx=scroll_x%tile_w; 
+  //tilepos_x=abs(scroll_x/tile_w) % tilemax_x;
+  tilepos_x=(int)(scroll_x/tile_w);
+
   // Vertical scroll
   if(!vscroll_on) {
 	  scroll_y=scroll_stop_y;
   }
   else {
 	  scroll_y=*ctrl_y/speed_y;
- 	  scroll_dy=scroll_y%tile_h; 
-	  tilepos_y=scroll_y/tile_h;
   }
+  scroll_dy=scroll_y%tile_h; 
+  //tilepos_y=abs(scroll_y/tile_h) % tilemax_y;
+  tilepos_y=(int)(scroll_y/tile_h);
+
  }
 
 void map::setHScroll(bool v,int ss) { hscroll_on=v; scroll_stop_x=ss; }
