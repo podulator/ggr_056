@@ -1,5 +1,6 @@
 #include <allegro.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "util.h"
 #include "class/_sprite.h"

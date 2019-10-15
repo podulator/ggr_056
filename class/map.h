@@ -80,6 +80,8 @@ map::map(char *bmp_filename,char *map_filename, BITMAP *out,bool mainscroll,char
   scroll_stop_x=0; scroll_stop_y=0;
   hscroll_on=1; vscroll_on=1;
   scroll_x=0; scroll_y=0;
+  tilepos_x=0;
+  tilepos_y=0;
  }
 
 map::~map()
@@ -233,13 +235,23 @@ void map::drawMap()
 void map::scrollMap()
  {
   // Horizontal scroll
-  if(!hscroll_on) scroll_x=scroll_stop_x;
-  else scroll_x=*ctrl_x/speed_x;
- 	scroll_dx=scroll_x%tile_w; tilepos_x=scroll_x/tile_w;
+  if(!hscroll_on) {
+	  scroll_x=scroll_stop_x;
+  }
+  else {
+	  scroll_x=*ctrl_x/speed_x;
+	  scroll_dx=scroll_x%tile_w; 
+	  tilepos_x=scroll_x/tile_w;
+  }
   // Vertical scroll
-  if(!vscroll_on) scroll_y=scroll_stop_y;
-  else scroll_y=*ctrl_y/speed_y;
- 	scroll_dy=scroll_y%tile_h; tilepos_y=scroll_y/tile_h;
+  if(!vscroll_on) {
+	  scroll_y=scroll_stop_y;
+  }
+  else {
+	  scroll_y=*ctrl_y/speed_y;
+ 	  scroll_dy=scroll_y%tile_h; 
+	  tilepos_y=scroll_y/tile_h;
+  }
  }
 
 void map::setHScroll(bool v,int ss) { hscroll_on=v; scroll_stop_x=ss; }
