@@ -1,3 +1,8 @@
 *.dll
 *.exe
 *.bat
+*.o
+*.opk
+gng-*
+gng
+
