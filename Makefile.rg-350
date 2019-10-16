@@ -1,0 +1,25 @@
+TARGET = gng
+CC = $(CROSS_COMPILE)gcc
+CXX = $(CROSS_COMPILE)g++
+STRIP = $(CROSS_COMPILE)strip
+CFLAGS = -ggdb \
+    -std=gnu++98 \
+    -DLOG_LEVEL=3 \
+    -g -O2 -mips32 \
+    -Wno-write-strings
+LDFLAGS=`allegro-config --libs`
+LIBS = 
+OBJS = game.o
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CFLAGS) $(LDFLAGS) $(LIBS) $^ -o $@
+
+clean:
+	rm -f $(TARGET) $(OBJS)
+
+distclean: clean
+	rm -f ./*.opk
