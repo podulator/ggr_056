@@ -1,6 +1,6 @@
 #!/bin/sh
 
-OPK_NAME="GhoulsAndGhostsRemix-0.56-1.opk"
+OPK_NAME="GhoulsAndGhostsRemix-0.56-2.opk"
 
 echo ${OPK_NAME}
 
