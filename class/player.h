@@ -357,17 +357,39 @@ void player::moveShild()
 
 void player::moveSprite()
  {
+
   if(restart) { if(ti[3]->isOn()) { if(!key_taked) (*lives)--; ready_go=1; } }
   if(Y>224 && !dead) { dead=1; dress=1; setHitted(true); }
   if(dead) return; // Dead
 
+  // grab basic keys
+  bool my_left = key[KEYLEFT] ? true : false;
+  bool my_right = key[KEYRIGHT] ? true : false;
+  bool my_up = key[KEYUP] ? true : false;
+  bool my_down = key[KEYDOWN] ? true : false;
+  bool my_jump = key[KEYJUMP] ? true : false;
+  bool my_shoot = key[KEYSHOOT] ? true : false;
+  
+  if (num_joysticks > 0) {
+	//printf("num joy = %i\n", num_joysticks);
+	poll_joystick();
+	my_left = my_left || joy[0].stick[0].axis[0].d1;
+	my_right = my_right || joy[0].stick[0].axis[0].d2;
+	my_up = my_up || joy[0].stick[0].axis[1].d1;
+	my_down = my_down || joy[0].stick[0].axis[1].d2;
+	my_jump = my_jump || joy[0].button[0].b;
+	my_shoot = my_shoot || joy[0].button[1].b;
+  }
+
+  //printf("left: %i, right: %i, up: %i, down: %i, jump: %i, shoot: %i\n", my_left, my_right, my_up, my_down, my_jump, my_shoot);
+  
   if(dress==2) magicpw=1; else { magicpw=0; gauge=0; magicfire=0; } // Attiva magia per gold armour
   if(climb) { canFire=0; } // Aggiusta bug "spara a fine scala"
-  if(!key[KEYSHOOT]) canFire=1;
+  if(!my_shoot) canFire=1;
   if(magicpw)
    {
-   	if(!key[KEYSHOOT]) if(gauge==76 && !climb) { stop_sample(sound[7]); magicfire=1; ti[5]->reset(); ti[4]->reset(); }
-   	if(key[KEYSHOOT] && !magicfire)
+   	if(!my_shoot) if(gauge==76 && !climb) { stop_sample(sound[7]); magicfire=1; ti[5]->reset(); ti[4]->reset(); }
+   	if(my_shoot && !magicfire)
    	 {
    	  if(!climb)        gauge++; if(gauge>76) gauge=76; if(gauge==25) play_sample(sound[7],120,150,1000,0); }
    	  else { if(!climb) gauge-=15; if(gauge<0) gauge=0; if(gauge<=30 && gauge>5 && !magicfire) { stop_sample(sound[7]); play_sample(sound[0],120,150,1000,0); }
@@ -382,35 +404,35 @@ void player::moveSprite()
  	if(jump_hit_up || jump_hit_down) return; // Hitted
  	if(climb) // Sulla scala
  	 {
-    if(key[KEYUP])           { addGlobY(-2); }
-    if(key[KEYDOWN])         { addGlobY(2);  }
+    if(my_up)           { addGlobY(-2); }
+    if(my_down)         { addGlobY(2);  }
     if(plat_stair==0)        { climb=0; }
     jump_up=0; jump_down=0; fire1=0; fire2=0; fire_down=0; fire_up=0;
     return;
  	 }
  	if(!jump_up && !jump_down && !fire1 && !fire2 && !fire_down && !fire_up && !climb) // Al suolo
  	 {
-      if(!key[KEYLEFT])                                    { move=0; stop=1; }
-      if(!key[KEYRIGHT])                                   { move=0; stop=1; }
-      if(!key[KEYDOWN])                                    { down=0; stop=1; }
-      if(key[KEYLEFT]  && !key[KEYRIGHT] && !key[KEYDOWN]) { move=1; down=0; stop=0; if(!side) turn=1; direction=1; dx=-2; }
-      if(key[KEYRIGHT] && !key[KEYLEFT] && !key[KEYDOWN])  { move=1; down=0; stop=0; if(side)  turn=1; direction=0; dx=2;  }
-      if(key[KEYLEFT]  &&  key[KEYRIGHT])                  { move=1; down=0; stop=0; if(side)  turn=1; direction=0; dx=2;  }
-      if(key[KEYUP]    &&  plat_stair==1)                  { climb=1; stop=0; move=0; act_frame=18; glob_x=(glob_x/plat_map->getTileH()*plat_map->getTileH())+16; }
-      if(key[KEYDOWN]) {
+      if(!my_left)                                    { move=0; stop=1; }
+      if(!my_right)                                   { move=0; stop=1; }
+      if(!my_down)                                    { down=0; stop=1; }
+      if(my_left  && !my_right && !my_down) { move=1; down=0; stop=0; if(!side) turn=1; direction=1; dx=-2; }
+      if(my_right && !my_left && !my_down)  { move=1; down=0; stop=0; if(side)  turn=1; direction=0; dx=2;  }
+      if(my_left  &&  my_right)                  { move=1; down=0; stop=0; if(side)  turn=1; direction=0; dx=2;  }
+      if(my_up    &&  plat_stair==1)                  { climb=1; stop=0; move=0; act_frame=18; glob_x=(glob_x/plat_map->getTileH()*plat_map->getTileH())+16; }
+      if(my_down) {
     	                if(plat_stair==2) { climb=1; stop=0; move=0; act_frame=23; glob_x=(glob_x/plat_map->getTileH()*plat_map->getTileH())+16; }
     	                else              {
-							               if(key[KEYLEFT])  { if(!side) turn=1; }
-    	                                   if(key[KEYRIGHT]) { if(side)  turn=1; }
+							               if(my_left)  { if(!side) turn=1; }
+    	                                   if(my_right) { if(side)  turn=1; }
     	                                   down=1; move=0; stop=0;
     	                                  }
     	               }
-      if(key[KEYJUMP] && !fall) { jump_up=1; down=0; dy=-4; key[KEYJUMP]=0; jump_y=0; }
-      if(key[KEYSHOOT] && canFire) {
+      if(my_jump && !fall) { jump_up=1; down=0; dy=-4; key[KEYJUMP]=0; jump_y=0; }
+      if(my_shoot && canFire) {
     	                            move=0; stop=0;
     								if(!down)      { fire1=1; fire2=0; fire_up=0; act_frame=10; }
     								if(down)       { fire2=1; fire1=0; fire_up=0; act_frame=12; }
-    								if(key[KEYUP]) { fire_up=1; fire1=0; fire2=0; act_frame=14; }
+    								if(my_up) { fire_up=1; fire1=0; fire2=0; act_frame=14; }
     	                            shootWeapon();
     	                            down=0;
     	                            canFire=0;
@@ -419,27 +441,28 @@ void player::moveSprite()
     }
   if((jump_up || jump_down) && !fire1 && !fire2 && !fire_down && !fire_up && !climb) // In volo
  	 {
-    if(!key[KEYLEFT])    { stop=1; }
-    if(!key[KEYRIGHT])   { stop=1; }
-    if(!key[KEYDOWN])    { down=0; stop=1; }
-    if(key[KEYLEFT]  && !key[KEYRIGHT]) { if(!side) turn=1; }
-    if(key[KEYRIGHT] && !key[KEYLEFT])  { if(side)  turn=1; }
-    if(key[KEYLEFT]  &&  key[KEYRIGHT]) { if(side)  turn=1; }
-    if(key[KEYUP])       { }
-    if(key[KEYDOWN])     { }
-    if(key[KEYJUMP])      { key[KEYJUMP]=0; }
-    if(key[KEYSHOOT] && canFire) {
+    if(!my_left)    { stop=1; }
+    if(!my_right)   { stop=1; }
+    if(!my_down)    { down=0; stop=1; }
+    if(my_left  && !my_right) { if(!side) turn=1; }
+    if(my_right && !my_left)  { if(side)  turn=1; }
+    if(my_left  &&  my_right) { if(side)  turn=1; }
+    if(my_up)       { }
+    if(my_down)     { }
+    if(my_jump)      { key[KEYJUMP]=0; }
+    if(my_shoot && canFire) {
                                   stop=0;
     							  if(!down)         { fire1=1; fire2=0; fire_up=0; fire_down=0; act_frame=10; }
     							  if(down)          { fire2=1; fire1=0; fire_up=0; fire_down=0; act_frame=12; }
-    							  if(key[KEYUP])   { fire_up=1; fire1=0; fire2=0; fire_down=0; act_frame=14; }
-    							  if(key[KEYDOWN]) { fire_down=1; fire_up=0; fire1=0; fire2=0; act_frame=16; }
+    							  if(my_up)   { fire_up=1; fire1=0; fire2=0; fire_down=0; act_frame=14; }
+    							  if(my_down) { fire_down=1; fire_up=0; fire1=0; fire2=0; act_frame=16; }
                                   shootWeapon();
                                   down=0;
                                   canFire=0;
-                                  //key[KEYSHOOT]=0;
+                                  //my_shoot=0;
                                  }
    }
+
  }
 
 void player::animSprite()

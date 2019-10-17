@@ -137,6 +137,8 @@ void init()
   install_keyboard();
   install_sound(DIGI_AUTODETECT,MIDI_AUTODETECT,NULL);
   set_volume(SOUND_VOLUME,MUSIC_VOLUME); 
+  install_joystick(JOY_TYPE_AUTODETECT);
+  printf("detected %i joysticks\n", num_joysticks);
   VSCR=create_bitmap_ex(SCREEND,G_RESX,G_RESY);
   set_color_depth(SCREEND);
 
@@ -3217,6 +3219,7 @@ void collisionPlayerBullets()
 
 void rePaint(int max_fps)
  {
+
  	int diff;
  	
  	// Posteffects (experimental)
@@ -3303,28 +3306,31 @@ void rePaint(int max_fps)
 
 void debug(BITMAP *bmp, int alpha)
  {
-  if(key[KEY_F1])   { L_0=!L_0;     key[KEY_F1]=0; }
-  if(key[KEY_F2])   { L_1=!L_1;     key[KEY_F2]=0; }
-  if(key[KEY_F3])   { L_S=!L_S;     key[KEY_F3]=0; }
-  if(key[KEY_F4])   { L_H=!L_H;     key[KEY_F4]=0; }
-  if(key[KEY_F5])   { L_OSD=!L_OSD; key[KEY_F5]=0; }
-  if(key[KEY_F6])   { L_B=!L_B;     key[KEY_F6]=0; }
-  if(key[KEY_F7])   { VSYNC=!VSYNC; key[KEY_F7]=0; }
+	 
   if(key[KEY_F8])   { DBUG=!DBUG;   key[KEY_F8]=0; }
-  if(key[KEY_F9])   { SCANLINES++;  if(SCANLINES>3) SCANLINES=0; key[KEY_F9]=0; }
-  if(key[KEY_PGUP]) { MFPS++;       key[KEY_PGUP]=0; }
-  if(key[KEY_PGDN]) { MFPS--;       key[KEY_PGDN]=0; }
-  if(key[KEY_1])    { PL->takeBonus(3,LANCE); key[KEY_1]=0; }
-  if(key[KEY_2])    { PL->takeBonus(3,KNIFE); key[KEY_2]=0; }
-  if(key[KEY_3])    { PL->takeBonus(3,AXE);   key[KEY_3]=0; }
-  if(key[KEY_4])    { PL->takeBonus(3,SWORD); key[KEY_4]=0; }
-  if(key[KEY_5])    { PL->takeBonus(3,ARROW); key[KEY_5]=0; }
-  if(key[KEY_6])    { PL->takeBonus(3,FLAME); key[KEY_6]=0; }	
-  if(key[KEY_D]) PL->setDress(2);
-  if(key[KEY_F]) PL->takeBonus(5);
-  if(key[KEY_G]) PL->takeBonus(7);
   if(DBUG)
    {
+	if(key[KEY_F1])   { L_0=!L_0;     key[KEY_F1]=0; }
+	if(key[KEY_F2])   { L_1=!L_1;     key[KEY_F2]=0; }
+	if(key[KEY_F3])   { L_S=!L_S;     key[KEY_F3]=0; }
+	if(key[KEY_F4])   { L_H=!L_H;     key[KEY_F4]=0; }
+	if(key[KEY_F5])   { L_OSD=!L_OSD; key[KEY_F5]=0; }
+	if(key[KEY_F6])   { L_B=!L_B;     key[KEY_F6]=0; }
+	if(key[KEY_F7])   { VSYNC=!VSYNC; key[KEY_F7]=0; }
+	
+	if(key[KEY_F9])   { SCANLINES++;  if(SCANLINES>3) SCANLINES=0; key[KEY_F9]=0; }
+	if(key[KEY_PGUP]) { MFPS++;       key[KEY_PGUP]=0; }
+	if(key[KEY_PGDN]) { MFPS--;       key[KEY_PGDN]=0; }
+	if(key[KEY_1])    { PL->takeBonus(3,LANCE); key[KEY_1]=0; }
+	if(key[KEY_2])    { PL->takeBonus(3,KNIFE); key[KEY_2]=0; }
+	if(key[KEY_3])    { PL->takeBonus(3,AXE);   key[KEY_3]=0; }
+	if(key[KEY_4])    { PL->takeBonus(3,SWORD); key[KEY_4]=0; }
+	if(key[KEY_5])    { PL->takeBonus(3,ARROW); key[KEY_5]=0; }
+	if(key[KEY_6])    { PL->takeBonus(3,FLAME); key[KEY_6]=0; }	
+	if(key[KEY_D]) PL->setDress(2);
+	if(key[KEY_F]) PL->takeBonus(5);
+	if(key[KEY_G]) PL->takeBonus(7);
+
     textprintf_ex(bmp,font,0,216,makecol32(255,0,0),-1,"V.%s",VER);
     textprintf_ex(bmp,font,0,0, makecol32(255,0,0),-1,"          | FPS: %d | Bonus seq.: %d | P. Layer %d",fps,BONUS_SEQ,PL->getActPlatLayer());
     textprintf_ex(bmp,font,0,12,makecol32(255,0,0),-1,"(Pl) PosX:%d PosY:%d GlobX:%d GlobY:%d",PL->getPosX(),PL->getPosY(),PL->getGlobX(),PL->getGlobY());
